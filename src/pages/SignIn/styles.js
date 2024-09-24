@@ -1,8 +1,9 @@
 import styled from "styled-components/native";
+import { theme } from "../../theme"; 
 
 export const Background = styled.View`
   flex: 1;
-  background-color: #f0f4ff;
+  background-color: ${theme.background};
 `;
 
 export const Container = styled.KeyboardAvoidingView`
@@ -20,19 +21,19 @@ export const AreaInput = styled.View`
 `;
 
 export const Input = styled.TextInput`
-  background-color: #fff;
+  background-color: ${theme.white};
   width: 90%;
   font-size: 17px;
   padding: 10px;
   border-radius: 8px;
-  color: #121212;
+  color: ${theme.darkText};
   margin-bottom: 15px;
 `;
 
 export const SubmitButton = styled.TouchableOpacity`
   width: 90%;
   height: 45px;
-  background-color: #3b3bdf;
+  background-color: ${theme.buttonBackground};
   border-radius: 8px;
   margin-top: 10px;
   align-items: center;
@@ -41,14 +42,13 @@ export const SubmitButton = styled.TouchableOpacity`
 
 export const SubmitText = styled.Text`
   font-size: 20px;
-  color: #FFF;
+  color: ${theme.submitText};
 `;
 
 export const Link = styled.TouchableOpacity`
-  margin-top: 10px;
-  margin-bottom: 10px;
+  margin: 10px 0;
 `;
 
 export const LinkText = styled.Text`
-  color: #171717;
+  color: ${theme.linkText};
 `;
