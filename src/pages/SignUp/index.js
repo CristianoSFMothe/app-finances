@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Platform } from 'react-native';
 import {
   Background,
@@ -8,8 +8,18 @@ import {
   SubmitButton,
   SubmitText,
 } from "../SignIn/styles";
+import { AuthContext } from '../../contexts/auth';
 
 export default function SignUp(){
+  const { signUp } = useContext(AuthContext);
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const handleSignUp = () => {
+    signUp(name, email, password);
+  }
+
   return(
     <Background>
       <Container
@@ -20,22 +30,29 @@ export default function SignUp(){
       <AreaInput>
         <Input 
           placeholder="Nome"
+          value={name}
+          onChangeText={(text) => setName(text)}
         />
       </AreaInput>
 
       <AreaInput>
         <Input 
           placeholder="Seu email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
         />
       </AreaInput>
 
       <AreaInput>
         <Input 
-          placeholder="Sua sennha"
+          placeholder="Sua senha"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          secureTextEntry={true}
         />
       </AreaInput>
 
-      <SubmitButton activeOpacity={0.8}>
+      <SubmitButton activeOpacity={0.8} onPress={handleSignUp}>
         <SubmitText>Cadastrar</SubmitText>
       </SubmitButton>
 
