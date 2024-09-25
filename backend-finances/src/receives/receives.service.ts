@@ -1,8 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateReceiveDto } from './dto/create-receives.dto';
 import { UsersService } from 'src/users/users.service';
 import { ReceiveEntity } from './entities/receives.entity';
+import { TransactionType } from './transaction-type.enum';
 
 @Injectable()
 export class ReceivesService {
@@ -16,26 +21,17 @@ export class ReceivesService {
 
     const findUser = await this.usersService.getUserById(user_id);
 
-    if (type === 'receita') {
-      await this.prisma.user.update({
-        where: {
-          id: user_id,
-        },
-        data: {
-          balance: findUser.balance + Number(value),
-        },
-      });
+    let newBalance: number;
+
+    if (type === TransactionType.INCOME) {
+      newBalance = findUser.balance + Number(value);
+    } else if (type === TransactionType.EXPENSE) {
+      newBalance = findUser.balance - Number(value);
     } else {
-      await this.prisma.user.update({
-        where: {
-          id: user_id,
-        },
-        data: {
-          balance: findUser.balance - Number(value),
-        },
-      });
+      throw new BadRequestException('Tipo de transação inválido');
     }
 
+    // Create the new receive
     const newReceive = await this.prisma.receive.create({
       data: {
         description: data.description,
@@ -52,6 +48,15 @@ export class ReceivesService {
             email: true,
           },
         },
+      },
+    });
+
+    await this.prisma.user.update({
+      where: {
+        id: user_id,
+      },
+      data: {
+        balance: newBalance,
       },
     });
 

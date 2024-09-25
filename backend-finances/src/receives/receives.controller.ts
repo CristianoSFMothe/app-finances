@@ -7,10 +7,15 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ReceivesService } from './receives.service';
 import { CreateReceiveDto } from './dto/create-receives.dto';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Receitas')
+@UseGuards(JwtAuthGuard)
 @Controller('receives')
 export class ReceivesController {
   constructor(private readonly receivesService: ReceivesService) {}
