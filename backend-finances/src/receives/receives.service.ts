@@ -116,4 +116,35 @@ export class ReceivesService {
 
     return receive;
   }
+
+  async updateReceive(id: string, data: Partial<CreateReceiveDto>) {
+    const existingReceive = await this.prisma.receive.findUnique({
+      where: { id },
+    });
+
+    if (!existingReceive) {
+      throw new NotFoundException('Recebimento não encontrado');
+    }
+
+    return this.prisma.receive.update({
+      where: { id },
+      data,
+    });
+  }
+
+  async deleteReceive(id: string) {
+    const receive = await this.prisma.receive.findUnique({
+      where: { id },
+    });
+
+    if (!receive) {
+      throw new NotFoundException('Receita não encontrada');
+    }
+
+    await this.prisma.receive.delete({
+      where: { id },
+    });
+
+    return { message: 'Receita excluída com sucesso' };
+  }
 }

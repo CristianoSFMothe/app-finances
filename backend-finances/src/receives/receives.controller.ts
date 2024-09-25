@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ReceivesService } from './receives.service';
 import { CreateReceiveDto } from './dto/create-receives.dto';
 
@@ -24,5 +33,18 @@ export class ReceivesController {
   @Get(':id')
   getReceiveById(@Param('id') id: string) {
     return this.receivesService.getReceiveById(id);
+  }
+
+  @Patch(':id')
+  updateReceive(
+    @Param('id') id: string,
+    @Body() data: Partial<CreateReceiveDto>,
+  ) {
+    return this.receivesService.updateReceive(id, data);
+  }
+
+  @Delete(':id')
+  async delete(@Param('id') id: string) {
+    return this.receivesService.deleteReceive(id);
   }
 }
