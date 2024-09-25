@@ -20,13 +20,11 @@ export class UsersService {
       throw new ConflictException('Email já esta em uso');
     }
 
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(data.password, saltRounds);
+    data.password = await this.hashPassword(data.password);
 
     return this.prisma.user.create({
       data: {
         ...data,
-        password: hashedPassword,
         balance: 0,
       },
       select: {
@@ -87,5 +85,72 @@ export class UsersService {
     }
 
     return user;
+  }
+
+  async updateUser(id: string, data: Partial<CreateUserDto>) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    if (data.password) {
+      data.password = await this.hashPassword(data.password);
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        ...data,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        balance: true,
+      },
+    });
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return this.prisma.user.delete({
+      where: { id },
+    });
+  }
+  async validateUserPassword(
+    email: string,
+    password: string,
+  ): Promise<boolean> {
+    const user = await this.prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return false; // Usuário não encontrado
+    }
+
+    return await this.comparePasswords(password, user.password);
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+  }
+
+  private async comparePasswords(
+    password: string,
+    hashedPassword: string,
+  ): Promise<boolean> {
+    return await bcrypt.compare(password, hashedPassword);
   }
 }

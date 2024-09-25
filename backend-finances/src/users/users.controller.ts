@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 
@@ -24,5 +24,10 @@ export class UsersController {
   @Get('email')
   getByEmail(@Query('email') email: string) {
     return this.usersService.getUserByEmail(email);
+  }
+
+  @Put(':id')
+  update(@Param('id') id: string, @Body() data: Partial<CreateUserDto>) {
+    return this.usersService.updateUser(id, data);
   }
 }
