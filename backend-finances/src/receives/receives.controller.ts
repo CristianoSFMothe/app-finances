@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ReceivesService } from './receives.service';
 import { CreateReceiveDto } from './dto/create-receives.dto';
 
@@ -9,5 +9,20 @@ export class ReceivesController {
   @Post()
   async create(@Body() data: CreateReceiveDto) {
     return this.receivesService.createReceive(data);
+  }
+
+  @Get()
+  listReceives(@Query('user_id') user_id: string, @Query('date') date: string) {
+    return this.receivesService.listReceives(user_id, date);
+  }
+
+  @Get('all')
+  listAllReceives() {
+    return this.receivesService.listAllReceives();
+  }
+
+  @Get(':id')
+  getReceiveById(@Param('id') id: string) {
+    return this.receivesService.getReceiveById(id);
   }
 }

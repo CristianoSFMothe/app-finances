@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateReceiveDto } from './dto/create-receives.dto';
 import { UsersService } from 'src/users/users.service';
@@ -47,5 +47,73 @@ export class ReceivesService {
     });
 
     return newReceive as ReceiveEntity;
+  }
+
+  async listReceives(user_id: string, date: string) {
+    const receives = await this.prisma.receive.findMany({
+      where: {
+        date: date,
+        user_id: user_id,
+      },
+      select: {
+        id: true,
+        description: true,
+        value: true,
+        type: true,
+        date: true,
+        created_at: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    if (receives.length === 0) {
+      throw new NotFoundException(
+        'Nenhum recebimento encontrado para esta data.',
+      );
+    }
+
+    return receives;
+  }
+
+  async listAllReceives() {
+    const receives = await this.prisma.receive.findMany({
+      select: {
+        id: true,
+        description: true,
+        value: true,
+        type: true,
+        date: true,
+        created_at: true,
+        user_id: true,
+      },
+      orderBy: {
+        created_at: 'desc',
+      },
+    });
+
+    return receives;
+  }
+
+  async getReceiveById(id: string) {
+    const receive = await this.prisma.receive.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        description: true,
+        value: true,
+        type: true,
+        date: true,
+        created_at: true,
+        user_id: true,
+      },
+    });
+
+    if (!receive) {
+      throw new NotFoundException('Recebimento não encontrado');
+    }
+
+    return receive;
   }
 }
