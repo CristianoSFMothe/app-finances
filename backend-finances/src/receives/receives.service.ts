@@ -44,9 +44,18 @@ export class ReceivesService {
         date: data.date,
         user_id: data.user_id,
       },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
-    return newReceive as ReceiveEntity;
+    return newReceive;
   }
 
   async listReceives(user_id: string, date: string) {
@@ -62,6 +71,13 @@ export class ReceivesService {
         type: true,
         date: true,
         created_at: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
       orderBy: {
         created_at: 'desc',
@@ -87,6 +103,13 @@ export class ReceivesService {
         date: true,
         created_at: true,
         user_id: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
       orderBy: {
         created_at: 'desc',
@@ -107,6 +130,13 @@ export class ReceivesService {
         date: true,
         created_at: true,
         user_id: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
       },
     });
 
