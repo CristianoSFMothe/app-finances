@@ -6,10 +6,15 @@ import {
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: JwtService,
+  ) {}
 
   async createUser(data: CreateUserDto) {
     const emailExisting = await this.prisma.user.findFirst({
@@ -67,17 +72,9 @@ export class UsersService {
     return user;
   }
 
-  async getUserByEmail(email: string) {
+  async findByEmail(email: string): Promise<User> {
     const user = await this.prisma.user.findUnique({
       where: { email },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        balance: true,
-        created_at: true,
-        updated_at: true,
-      },
     });
 
     if (!user) {
@@ -140,6 +137,33 @@ export class UsersService {
     }
 
     return await this.comparePasswords(password, user.password);
+  }
+
+  async getLoggedInUser(userId: string): Promise<{
+    id: string;
+    email: string;
+    name: string;
+    balance: number;
+    token: string;
+  }> {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        balance: true,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    return {
+      ...user,
+      token: this.jwtService.sign({ userId: user.id }),
+    };
   }
 
   private async hashPassword(password: string): Promise<string> {

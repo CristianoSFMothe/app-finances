@@ -5,13 +5,13 @@ import {
   Param,
   Post,
   Put,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
+import { User } from '@prisma/client';
 
 @ApiTags('Usuários')
 @Controller('users')
@@ -36,9 +36,10 @@ export class UsersController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Get('email')
-  getByEmail(@Query('email') email: string) {
-    return this.usersService.getUserByEmail(email);
+  @Get('email/:email')
+  async getUserByEmail(@Param('email') email: string): Promise<User> {
+    const user = await this.usersService.findByEmail(email);
+    return user;
   }
 
   @UseGuards(JwtAuthGuard)

@@ -16,30 +16,40 @@ export class AuthService {
   ) {}
 
   async login(email: string, password: string): Promise<AuthEntity> {
-    // Etapa 1: buscar um usuário com o email fornecido
     const user = await this.prisma.user.findUnique({
       where: {
         email: email,
       },
+      select: {
+        // Use select para escolher quais campos retornar
+        id: true,
+        name: true,
+        email: true,
+        password: true, // Inclua o password para validar, mas não retorne na resposta
+        balance: true, // Inclua o balance na seleção
+      },
     });
 
-    // Se nenhum usuário for encontrado, gera um erro
+    console.log(user);
+
     if (!user) {
-      throw new NotFoundException('No user found for email');
+      throw new NotFoundException('Usuário ou senha inválidos.');
     }
 
-    // Passo 2: Verifique se a senha está correta
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
-    // Se a senha não corresponder, gera um erro
+    console.log('Password valid:', isPasswordValid);
+
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Invalid email or password');
+      throw new UnauthorizedException('Usuário ou senha inválidos.');
     }
 
-    // Passo 3: Gere um JWT contendo o ID do usuário e retorne-o
     return {
-      token: this.jwtService.sign({ userId: user.id }),
+      id: user.id,
+      name: user.name,
       email: user.email,
+      balance: user.balance, // Adicione o balance na resposta
+      token: this.jwtService.sign({ userId: user.id }),
     };
   }
 }

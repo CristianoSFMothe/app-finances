@@ -6,4 +6,13 @@ export class AuthEntity {
 
   @ApiProperty()
   email: string;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  id: string;
+
+  @ApiProperty()
+  balance: number;
 }
