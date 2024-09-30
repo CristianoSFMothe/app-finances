@@ -3,7 +3,7 @@ import { compare } from 'bcryptjs';
 import { sign } from 'jsonwebtoken';
 import { validate } from 'class-validator';
 import { plainToClass } from 'class-transformer';
-import { LoginDto } from "../../dto/user/LoginDto"; // Certifique-se de que o caminho esteja correto
+import { LoginDto } from "../../dto/user/LoginDto";
 
 interface AuthRequest {
   email: string;
@@ -12,18 +12,15 @@ interface AuthRequest {
 
 class AuthUserService {
   async execute({ email, password }: AuthRequest) {
-    // Transforma os dados de entrada em uma instância do DTO
     const loginDto = plainToClass(LoginDto, { email, password });
 
-    // Valida o DTO
     const errors = await validate(loginDto);
 
     if (errors.length > 0) {
       const messages = errors.map(error => Object.values(error.constraints)).flat();
-      throw new Error(messages.join(', ')); // Agora segue a mesma abordagem que o CreateUserService
+      throw new Error(messages.join(', '));
     }
 
-    // Verifica se o usuário existe
     const user = await prismaClient.user.findFirst({
       where: {
         email: email,
@@ -34,20 +31,18 @@ class AuthUserService {
       throw new Error("Email/Senha incorretos");
     }
 
-    // Verifica se a senha está correta
     const passwordMatch = await compare(password, user.password);
 
     if (!passwordMatch) {
       throw new Error("Email/Senha incorretos");
     }
 
-    // Gera o token
     const token = sign(
       {
         name: user.name,
         email: user.email,
       },
-      "4f93ac9d10cb751b8c9c646bc9dbccb9", // Lembre-se de manter sua chave secreta em uma variável de ambiente
+      "4f93ac9d10cb751b8c9c646bc9dbccb9", 
       {
         subject: user.id,
         expiresIn: '30d',

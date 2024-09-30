@@ -1,7 +1,7 @@
 import prismaClient from "../../prisma";
 import { validate } from "class-validator";
 import { plainToClass } from "class-transformer";
-import { CreateReceiveDto } from "../../dto/receive/CreateReceiveDto"; // Certifique-se de que o caminho esteja correto
+import { CreateReceiveDto } from "../../dto/receive/CreateReceiveDto"; 
 
 interface ReceiveRequest {
   description: string;
@@ -13,20 +13,12 @@ interface ReceiveRequest {
 
 class CreateReceiveService {
   async execute({ description, type, value, date, user_id }: ReceiveRequest) {
-    // Transforma os dados de entrada em uma instância do DTO
     const receiveDto = plainToClass(CreateReceiveDto, { description, type, value, date, user_id });
 
-    // Valida o DTO
     const errors = await validate(receiveDto);
-
     if (errors.length > 0) {
       const messages = errors.map(error => Object.values(error.constraints)).flat();
       throw new Error(messages.join(', '));
-    }
-
-    // Verifica se o user_id é válido
-    if (!user_id) {
-      throw new Error("Invalid user");
     }
 
     const findUser = await prismaClient.user.findFirst({
@@ -53,7 +45,6 @@ class CreateReceiveService {
       },
     });
 
-    // Cria o novo recebimento
     const newReceive = await prismaClient.receive.create({
       data: {
         description,
