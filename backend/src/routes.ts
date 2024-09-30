@@ -9,15 +9,24 @@ import { DeleteReceiveController } from './controllers/receive/DeleteReceiveCont
 
 
 import { isAuthenticated } from './middlewares/isAuthenticated';
+import { ListUsersController } from './controllers/user/ListAllUsersController'
 
 const router = Router();
 
 // -- ROTAS --
+
+// --- USER ---
 router.post('/users', new CreateUserController().handle);
+
+router.get('/users', isAuthenticated, new ListUsersController().handle)
+
+// --- Auth ---
 
 router.post("/login", new AuthUserController().handle);
 
-router.get("/me", isAuthenticated, new ListDetailUserController().handle);
+router.get("/login/me", isAuthenticated, new ListDetailUserController().handle);
+
+// --- USER BALANCE ---
 
 router.get("/balance", isAuthenticated, new ListUserBalanceController().handle);
 
@@ -26,6 +35,5 @@ router.post("/receive", isAuthenticated, new CreateReceiveController().handle);
 router.get("/receives", isAuthenticated, new ListReceivesController().handle);
 
 router.delete("/receives/delete", isAuthenticated, new DeleteReceiveController().handle);
-
 
 export { router };
