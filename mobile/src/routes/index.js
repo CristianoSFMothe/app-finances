@@ -5,11 +5,26 @@ import { AuthContext } from '../contexts/auth';
 
 import AuthRoutes from './auth.routes';
 import AppRoutes from './app.routes';
+import { styled } from 'styled-components/native';
+import { theme } from '../theme';
 
 function Routes(){
-  const { signed } = useContext(AuthContext)
+  const { signed, loading } = useContext(AuthContext)
 
-  const loading = false;
+  if (loading) {
+    return (
+      <View 
+        styled={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: theme.backgroundColor
+        }}
+      >
+        <ActivityIndicator size="large" color={theme.buttonBackground} />
+      </View>
+    )
+  }
 
   return(
     signed ? <AppRoutes /> : <AuthRoutes/>
