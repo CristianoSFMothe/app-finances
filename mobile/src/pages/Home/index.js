@@ -1,10 +1,13 @@
 import React from 'react'
 import { View, Text } from 'react-native'
 
+import { Background } from './styles'
+import Header from '../../components/Header'
+
 export default function Home() {
   return (
-    <View>
-      <Text>TELA HOME</Text>
-    </View>
+    <Background>
+      <Header  title="Minhas movimentações" />
+    </Background>
   )
 }
