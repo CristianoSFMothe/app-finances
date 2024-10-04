@@ -1,15 +1,12 @@
-import { Text, View } from "react-native";
+import { StatusBar } from 'react-native';
+
+import Routes from './routes';
 
 export default function Index() {
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
-    </View>
+    <>
+      <StatusBar backgroundColor="#F0F4FF" barStyle="dark-content" />
+      <Routes />
+    </>
   );
 }
